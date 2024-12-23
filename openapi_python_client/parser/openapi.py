@@ -97,7 +97,7 @@ class EndpointCollection:
                     collection.parse_errors.append(error)
                 collection.endpoints.append(endpoint)
 
-        return endpoints_by_tag, schemas, parameters
+        return endpoints_by_tag, schemas, parameters, collection.endpoints
 
 
 def generate_operation_id(*, path: str, method: str) -> str:
@@ -491,6 +491,7 @@ class GeneratorData:
     errors: list[ParseError]
     endpoint_collections_by_tag: dict[utils.PythonIdentifier, EndpointCollection]
     enums: Iterator[Union[EnumProperty, LiteralEnumProperty]]
+    endpoints: list["Endpoint"]
 
     @staticmethod
     def from_dict(data: dict[str, Any], *, config: Config) -> Union["GeneratorData", GeneratorError]:
@@ -515,7 +516,7 @@ class GeneratorData:
                 config=config,
             )
         request_bodies = (openapi.components and openapi.components.requestBodies) or {}
-        endpoint_collections_by_tag, schemas, parameters, = EndpointCollection.from_data(
+        endpoint_collections_by_tag, schemas, parameters, endpoint_collections = EndpointCollection.from_data(
             data=openapi.paths, schemas=schemas, parameters=parameters, request_bodies=request_bodies, config=config
         )
 
@@ -532,4 +533,5 @@ class GeneratorData:
             models=models,
             errors=schemas.errors + parameters.errors,
             enums=enums,
+            endpoints=endpoint_collections,
         )
