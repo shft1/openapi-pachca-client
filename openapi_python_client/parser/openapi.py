@@ -515,7 +515,7 @@ class GeneratorData:
                 config=config,
             )
         request_bodies = (openapi.components and openapi.components.requestBodies) or {}
-        endpoint_collections_by_tag, schemas, parameters = EndpointCollection.from_data(
+        endpoint_collections_by_tag, schemas, parameters, = EndpointCollection.from_data(
             data=openapi.paths, schemas=schemas, parameters=parameters, request_bodies=request_bodies, config=config
         )
 
